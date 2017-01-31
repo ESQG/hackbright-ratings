@@ -43,11 +43,10 @@ def load_movies():
 
     for row in open("seed_data/u.item"):
         row = row.rstrip()
-        movie_data = row.split("|")[0:5]
-        movie_id = movie_data[0]
-        title = movie_data[1]
-        released_at = movie_data[2]
-        imdb_url = movie_data[4]
+
+        movie_id, title, released_at, _, imdb_url = row.split("|")[:5]
+        title = movie_data[1][:-6].rstrip()  # strips off e.g. ' (1996)'
+        # title = title.decode('latin-1')
 
         if released_at:
             released_at = datetime.datetime.strptime(released_at, "%d-%b-%Y")

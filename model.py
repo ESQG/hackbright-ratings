@@ -26,7 +26,7 @@ class User(db.Model):
     def __repr__(self):
         """Provides helpful representation when printed"""
 
-        return "<User user_id: %s email: %s>" % (self.user_id, self.email)
+        return "User: %s with email: %s" % (self.user_id, self.email)
 
 
 # Put your Movie and Rating model classes here.
@@ -39,6 +39,9 @@ class Movie(db.Model):
     title = db.Column(db.String(100), nullable=False)
     released_at = db.Column(db.DateTime, nullable=True)
     imdb_url = db.Column(db.String(200), nullable=False)
+
+    def __repr__(self):
+        return "Movie: %s" % self.title
 
 
 class Rating(db.Model):
@@ -60,6 +63,9 @@ class Rating(db.Model):
     # movie = db.relationship('Movie', backref='ratings')
     # user = db.relationship('User', backref='ratings')
 
+    def __repr__(self):
+        return "Rating: %s rated %s by user %s" % (self.movie_id, self.score, self.user_id)
+
 ##############################################################################
 # Helper functions
 
@@ -79,3 +85,7 @@ if __name__ == "__main__":
     from server import app
     connect_to_db(app)
     print "Connected to DB."
+
+# EXAMPLE
+# Movie.query.filter(extract('year', Movie.released_at) == 1995).all()
+# HOW TO FILTER BY DATES
