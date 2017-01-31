@@ -41,17 +41,24 @@ class Movie(db.Model):
     imdb_url = db.Column(db.String(200), nullable=False)
 
 
-
-class Ratings(db.Model):
+class Rating(db.Model):
     """Ratings of movies by users."""
 
     __tablename__ = "ratings"
 
     rating_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     movie_id = db.Column(db.Integer, nullable=False)
+    # movie_id = db.Column(db.Integer, nullable=False, 
+        # db.ForeignKey('movies.movie_id'))
+
     user_id = db.Column(db.Integer, nullable=False)
+    # user_id = db.Column(db.Integer, nullable=False,
+        # db.ForeignKey('users.user_id'))
+
     score = db.Column(db.Integer, nullable=False)
 
+    # movie = db.relationship('Movie', backref='ratings')
+    # user = db.relationship('User', backref='ratings')
 
 ##############################################################################
 # Helper functions
