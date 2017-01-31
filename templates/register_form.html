@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>
+    Register for a new account 
+</h1>
+<form>
+    <!-- POST -->
+    <ul>
+        <li><label for="email">Email:<input type="text" name="email"required></label></li>
+        <li><label for="age">Age:<input type="text" name="age"required></label></li>
+        <li><label for="zipcode">Zipcode:<input type="text" name="zipcode"required></label></li>
+
+        <li><label for="username">Choose a password:<input type="text" name="username"required></label></li>
+        <br>
+        <input type="submit">
+    </ul>
+</form>
+
+{% endblock %}
