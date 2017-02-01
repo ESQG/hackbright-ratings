@@ -152,16 +152,16 @@ def update_rating(movie_id):
         movie_id = int(movie_id)
         score = int(request.form.get("score"))   # cannot be None (Postdata, required)
 
-        found=False
+        already_rated=False
         for rating in user.ratings:
             if rating.movie_id == movie_id:
                 flash("Updated previous rating of %i to %i" %(rating.score, score))
                 rating.score = score
                 db.session.commit()
-                found=True
+                already_rated=True
                 return redirect("/movies/"+str(movie_id))
 
-        if not found:
+        if not already_rated:
             db.session.add(Rating(user_id=user_id,
                                       movie_id=movie_id,
                                       score=score))
