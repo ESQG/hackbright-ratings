@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>User {{ user.user_id }}</h1>
+
+<p>Email: {{ user.email }}</p>
+
+<p>Zipcode: {{ user.zipcode }} </p>
+
+{% if ratings_dict %}
+    <table>
+        <tr align="left">
+        <th>
+Movie</th>
+        <th>Rating
+        </th>
+    </tr>
+  {% for title in ratings_dict %}
+    <tr>
+        <td>{{ title }}</td>
+        <td>{{ ratings_dict[title] }}</td>
+    </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>No movies rated yet.</p>
+{% endif %}
+
+
+{% endblock %}

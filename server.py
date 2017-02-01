@@ -7,7 +7,7 @@ from flask import render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 
 from model import connect_to_db, db, User, Rating, Movie
-
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -91,6 +91,44 @@ def logout():
 
     flash("Logged Out")
     return redirect("/")
+
+@app.route('/users/<user_id>')
+def display_info(user_id):
+
+    user = User.query.get(user_id)
+    ratings_dict = {rating.movie.title:str(rating.score) for rating in user.ratings}
+    # e.g. {u'Star Trek: First Contact': 5}
+
+    return render_template('/user_info.html',
+                            user=user, ratings_dict=ratings_dict)
+
+@app.route('/movies')
+def show_movies_list():
+    """Returns a list of movies"""
+
+    movies = Movie.query.order_by(Movie.title).order_by(Movie.released_at).all()
+
+    return render_template("movie_list.html",
+                            movies=movies)
+
+@app.route('/movies/<movie_id>')
+def display_movie(movie_id):
+    """Returns info on a movie"""
+
+    movie = Movie.query.get(movie_id)
+    scores = [rating.score for rating in movie.ratings]
+    release_date = movie.released_at.strftime("%B %d, %Y")
+    if scores:
+        average = "{:.1f}".format(sum(scores)/float(len(scores)))
+    else:
+        average="Nobody has rated this yet"
+
+
+    return render_template('/movie_info.html',
+                            movie=movie,
+                            average=average,
+                            released=release_date)
+
 
 
 if __name__ == "__main__":

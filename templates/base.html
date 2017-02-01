@@ -18,9 +18,10 @@
 
 
 <footer>
+    <hr>
   {% if 'user_id' in session %}
   Logged in as {{ session['email'] }}
-  {% endif %}
+  {% endif %}<br>
 <a href="/logout">Logout</a>
 </footer>
 </body>
