@@ -8,5 +8,16 @@
 
 <p>Average rating: {{ average }}</p>
 
+    Rate this movie!
+<form action="/rate/{{movie.movie_id}}" method="POST">
+    {% for i in range(1,6) %}
+        {% if score==i %}
+            <input type="radio" name="score" value="{{i}}" checked="checked" required>{{i}}
+        {% else %}
+            <input type="radio" name="score" value="{{i}}" required>{{i}}
+        {% endif %}
+    {% endfor %}
+    <input type="submit">
+</form>
 
 {% endblock %}

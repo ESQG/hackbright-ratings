@@ -124,11 +124,49 @@ def display_movie(movie_id):
         average="Nobody has rated this yet"
 
 
+##return page with rating loaded if user has previously rated it
+    score = None
+    if 'user_id' in session:
+        user = User.query.get(session['user_id'])
+        for rating in user.ratings:
+            if int(movie_id) == rating.movie_id:
+                score = rating.score
+
+
     return render_template('/movie_info.html',
                             movie=movie,
                             average=average,
-                            released=release_date)
+                            released=release_date,
+                            score=score)
 
+@app.route('/rate/<movie_id>', methods=["POST"])
+def update_rating(movie_id):
+    """Updates or adds a rating"""
+
+    if 'user_id' not in session:
+        flash("You must be signed in to rate a movie.")
+        return redirect('/sign-in')
+    else:
+        user_id = session['user_id']
+        user = User.query.get(user_id)
+        movie_id = int(movie_id)
+        score = int(request.form.get("score"))   # cannot be None (Postdata, required)
+
+        found=False
+        for rating in user.ratings:
+            if rating.movie_id == movie_id:
+                flash("Updated previous rating of %i to %i" %(rating.score, score))
+                rating.score = score
+                db.session.commit()
+                found=True
+                return redirect("/movies/"+str(movie_id))
+
+        if not found:
+            db.session.add(Rating(user_id=user_id,
+                                      movie_id=movie_id,
+                                      score=score))
+            db.session.commit()
+            return redirect("/movies/"+str(movie_id))
 
 
 if __name__ == "__main__":
@@ -144,4 +182,4 @@ if __name__ == "__main__":
 
 
     
-    app.run(port=5000, host='0.0.0.0')
+    app.run(port=8000, host='0.0.0.0')
