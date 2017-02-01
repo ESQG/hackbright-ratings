@@ -6,9 +6,22 @@
 
 <body>
   Ratings
-  <hr>
 
+    <!-- Show flashed messages -->
+  {% with messages = get_flashed_messages() %}
+      {% for message in messages %}
+          <div class="alert alert-warning">{{ message }}</div>
+      {% endfor %}
+  {% endwith %}
+  <hr>
   {% block content %} put your content here {% endblock %}
 
+
+<footer>
+  {% if 'user_id' in session %}
+  Logged in as {{ session['email'] }}
+  {% endif %}
+<a href="/logout">Logout</a>
+</footer>
 </body>
 </html>

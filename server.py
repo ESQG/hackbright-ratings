@@ -2,8 +2,8 @@
 
 from jinja2 import StrictUndefined
 
-from flask import Flask, flash, jsonify, request
-from flask import render_template, redirect
+from flask import Flask, jsonify, request
+from flask import render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 
 from model import connect_to_db, db, User, Rating, Movie
@@ -58,6 +58,40 @@ def process_form():
         db.session.add(new_user)
         db.session.commit()
         return redirect("/")  # or user's page?
+
+@app.route('/sign-in', methods=["GET"])
+def sign_in():
+    """Signs user in"""
+
+    return render_template("/sign_in.html")
+
+@app.route('/sign-in', methods=["POST"])
+def process_login():
+    email=request.form.get("email")
+    password=request.form.get("password")
+    hypothetical_user=User.query.filter_by(email=email).first()
+    if hypothetical_user is None:
+        flash("That email has not been registered.  Please sign up.")
+        return redirect("/register")
+    elif hypothetical_user.password == password:
+        flash("Successfully logged in as %s" % email)
+        session['user_id'] = hypothetical_user.user_id
+        session['email'] = email
+        return redirect("/")
+    else:
+        flash("Wrong password. Please sign in again")
+        return redirect("/sign-in")
+
+@app.route('/logout')
+def logout():
+    """Logs user out"""
+
+    del session["user_id"]
+    del session["email"]
+
+    flash("Logged Out")
+    return redirect("/")
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the

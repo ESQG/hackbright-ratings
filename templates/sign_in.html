@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
-
-<!-- later! -->
+<h1>
+   Sign in to your account 
+</h1>
+<form action="/sign-in" method="POST">
+    <!-- POST -->
+    <ul>
+        <li><label for="email">Email:<input type="text" name="email"required></label></li>
+        <li><label for="password">Password:<input type="password" name="password"required></label></li>
+        <br>
+        <input type="submit">
+    </ul>
+</form>
 
 {% endblock %}
