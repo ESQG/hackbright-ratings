@@ -9,6 +9,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, db, User, Rating, Movie
 from datetime import datetime
 
+from correlation import pearson
+
 app = Flask(__name__)
 
 # Required to use Flask sessions and the debug toolbar
@@ -152,21 +154,48 @@ def update_rating(movie_id):
         movie_id = int(movie_id)
         score = int(request.form.get("score"))   # cannot be None (Postdata, required)
 
-        already_rated=False
-        for rating in user.ratings:
-            if rating.movie_id == movie_id:
-                flash("Updated previous rating of %i to %i" %(rating.score, score))
-                rating.score = score
-                db.session.commit()
-                already_rated=True
-                return redirect("/movies/"+str(movie_id))
-
-        if not already_rated:
+        rating = find_rating(user_id, movie_id)
+        if rating is not None:
+            flash("Updated previous rating of %i to %i" %(rating.score, score))
+            rating.score = score
+            db.session.commit()
+            already_rated=True
+            return redirect("/movies/"+str(movie_id))
+        else:
             db.session.add(Rating(user_id=user_id,
                                       movie_id=movie_id,
                                       score=score))
             db.session.commit()
             return redirect("/movies/"+str(movie_id))
+
+def find_rating(user_id, movie_id):  # returns a rating or None
+    return Rating.query.filter(Rating.user_id==user_id, Rating.movie_id==movie_id).first()
+
+def predict_rating(movie, user):
+    existing_rating = find_rating(movie.movie_id, user.user_id)
+    if existing_rating is not None:
+        return existing_rating.score
+
+    other_ratings = Rating.query.filter_by(movie_id=m.movie_id).all()
+    other_users = [r.user for r in other_ratings]
+
+    weighted_users=[]
+    for other_user in other_users:
+        sim = other_user.similarity(user)
+        if sim != 0:
+            weighted_users.append((sim, other_user))
+
+    weighted_users.sort(reverse=True)
+
+    top_user = weighted_users[0]
+
+    # Rating.query.filter(Rating.user_id==948, Rating.movie_id==496).one().score
+#  u_ratings = {}
+# >>> for r in u.ratings:
+# ...     u_ratings[r.movie_id] = r
+
+# >>> paired_ratings = []
+# >>> 
 
 
 if __name__ == "__main__":
