@@ -53,11 +53,11 @@ class User(db.Model):
         """Predict user's rating of a movie."""
 
         other_ratings = movie.ratings
-        other_users = [ r.user for r in other_ratings ]
+        # other_users = [r.user for r in other_ratings ]
 
         similarities = [
-            (self.similarity(other_user), other_user)
-            for other_user in other_users
+            (self.similarity(other_rating.user), other_rating)
+            for other_rating in other_ratings
         ]
 
         similarities.sort(reverse=True)

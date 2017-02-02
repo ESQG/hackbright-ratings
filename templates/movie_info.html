@@ -7,6 +7,9 @@
 <p>IMDB: <a href="{{ movie.imdb_url }}"> LINK </a> </p>
 
 <p>Average rating: {{ average }}</p>
+{% if prediction %}
+<p>We predict you will rate this movie {{ prediction }}.</p>
+{% endif %}
 
     Rate this movie!
 <form action="/rate/{{movie.movie_id}}" method="POST">

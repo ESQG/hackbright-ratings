@@ -130,16 +130,28 @@ def display_movie(movie_id):
     score = None
     if 'user_id' in session:
         user = User.query.get(session['user_id'])
-        for rating in user.ratings:
-            if int(movie_id) == rating.movie_id:
-                score = rating.score
+        rating = find_rating(session['user_id'], movie_id)
+        if rating is not None:
+            score = rating.score
+        else:
+            score = None
+    else:
+        score = None
 
+    prediction = None
+    
+    if score is not None:
+        prediction = score
+    elif user:
+        prediction = user.predict_rating(movie)
 
     return render_template('/movie_info.html',
                             movie=movie,
                             average=average,
                             released=release_date,
-                            score=score)
+                            score=score,
+                            prediction=prediction)
+
 
 @app.route('/rate/<movie_id>', methods=["POST"])
 def update_rating(movie_id):
@@ -211,4 +223,4 @@ if __name__ == "__main__":
 
 
     
-    app.run(port=8000, host='0.0.0.0')
+    app.run(port=5000, host='0.0.0.0')
