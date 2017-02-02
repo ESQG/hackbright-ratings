@@ -7,20 +7,38 @@
 <p>IMDB: <a href="{{ movie.imdb_url }}"> LINK </a> </p>
 
 <p>Average rating: {{ average }}</p>
-{% if prediction %}
-<p>We predict you will rate this movie {{ prediction }}.</p>
-{% endif %}
+<div id="prediction"></div><br>
 
     Rate this movie!
 <form action="/rate/{{movie.movie_id}}" method="POST">
     {% for i in range(1,6) %}
-        {% if score==i %}
-            <input type="radio" name="score" value="{{i}}" checked="checked" required>{{i}}
-        {% else %}
             <input type="radio" name="score" value="{{i}}" required>{{i}}
-        {% endif %}
     {% endfor %}
     <input type="submit">
 </form>
+
+<script src="http://code.jquery.com/jquery.js"></script>
+<script>
+"use strict";
+console.log("Script activated");
+$( document ).ready(function() {
+    console.log("Document ready");
+    $.get('/prediction/{{movie.movie_id}}', showPrediction);});
+
+function showPrediction(results) {
+    console.log("Showing prediction");
+    console.log(results);
+    if (results.prediction) {
+    $("#prediction").html("We predict you will rate this movie " + results.prediction + ".");
+    }
+    else if (results.score) {
+    $("#prediction").html("You rated this movie " + results.score + ".");
+    }
+}
+var hello=1;
+
+</script>
+
+
 
 {% endblock %}

@@ -127,30 +127,24 @@ def display_movie(movie_id):
 
 
 ##return page with rating loaded if user has previously rated it
-    score = None
-    if 'user_id' in session:
-        user = User.query.get(session['user_id'])
-        rating = find_rating(session['user_id'], movie_id)
-        if rating is not None:
-            score = rating.score
-        else:
-            score = None
-    else:
-        score = None
-
-    prediction = None
-    
-    if score is not None:
-        prediction = score
-    elif user:
-        prediction = user.predict_rating(movie)
+    # score = None
+    # if 'user_id' in session:
+    #     user = User.query.get(session['user_id'])
+    #     rating = find_rating(session['user_id'], movie_id)
+    #     if rating is not None:
+    #         score = rating.score
+    #         prediction = None
+    #     else:
+    #         score = None
+    #         prediction = user.predict_rating(movie)
+    # else:
+    #     score = None
+    #     prediction = None
 
     return render_template('/movie_info.html',
                             movie=movie,
                             average=average,
-                            released=release_date,
-                            score=score,
-                            prediction=prediction)
+                            released=release_date)
 
 
 @app.route('/rate/<movie_id>', methods=["POST"])
@@ -183,23 +177,43 @@ def update_rating(movie_id):
 def find_rating(user_id, movie_id):  # returns a rating or None
     return Rating.query.filter(Rating.user_id==user_id, Rating.movie_id==movie_id).first()
 
-def predict_rating(movie, user):
-    existing_rating = find_rating(movie.movie_id, user.user_id)
-    if existing_rating is not None:
-        return existing_rating.score
 
-    other_ratings = Rating.query.filter_by(movie_id=m.movie_id).all()
-    other_users = [r.user for r in other_ratings]
+@app.route("/prediction/<movie_id>")
+def show_prediction(movie_id):
+    score = None
+    if 'user_id' in session:
+        user = User.query.get(session['user_id'])
+        rating = find_rating(session['user_id'], movie_id)
+        if rating is not None:
+            score = rating.score
+            prediction = None
+        else:
+            score = None
+            movie = Movie.query.get(movie_id)
+            prediction = "{:.1f}".format(user.predict_rating(movie))
+    else:
+        score = None
+        prediction = None
 
-    weighted_users=[]
-    for other_user in other_users:
-        sim = other_user.similarity(user)
-        if sim != 0:
-            weighted_users.append((sim, other_user))
+    return jsonify({"prediction": prediction, "score": score})
 
-    weighted_users.sort(reverse=True)
+# def predict_rating(movie, user):
+#     existing_rating = find_rating(movie.movie_id, user.user_id)
+#     if existing_rating is not None:
+#         return existing_rating.score
 
-    top_user = weighted_users[0]
+#     other_ratings = Rating.query.filter_by(movie_id=m.movie_id).all()
+#     other_users = [r.user for r in other_ratings]
+
+#     weighted_users=[]
+#     for other_user in other_users:
+#         sim = other_user.similarity(user)
+#         if sim != 0:
+#             weighted_users.append((sim, other_user))
+
+#     weighted_users.sort(reverse=True)
+
+#     top_user = weighted_users[0]
 
     # Rating.query.filter(Rating.user_id==948, Rating.movie_id==496).one().score
 #  u_ratings = {}
