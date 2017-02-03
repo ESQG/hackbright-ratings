@@ -1,23 +1,57 @@
 <!doctype html>
 <html>
 <head>
+   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+   <link href="static/styles.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ratings</title>
 </head>
 
 <body>
-  Ratings<br>
-  <a href="/">Homepage</a>
-  <a href="/movies">All movies</a>
+  <nav class="navbar navbar-default" style="background-color: grey">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/" style="color: white"><img style="width: 40px; height: 40px; margin-top: -10px" src="http://www.clipartkid.com/images/229/evil-eye-cartoon-monsters-eyes-evil-eye-png-html-VeXMOh-clipart.png"></a>
+      </div>
 
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav" style="color: white">
+          <li><a href="/movies">All Movies</a></li>
+          <li><a href="/users">All Users</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right" style="color: white">
+          <li><a href="/sign-in">Login</a></li>
+          <li><a href="/register">Register</a></li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
+
+
+
+  <!--Mask-->
+
+  <!--/.Mask-->
     <!-- Show flashed messages -->
   {% with messages = get_flashed_messages() %}
       {% for message in messages %}
           <div class="alert alert-warning">{{ message }}</div>
       {% endfor %}
   {% endwith %}
-  <hr>
   {% block content %} put your content here {% endblock %}
 
+  <div class="view">
+      <!--Intro content-->
+      <div class="full-bg-img flex-center">
+       </div>
+  </div>
 
 <footer>
     <hr>
