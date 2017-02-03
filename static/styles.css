@@ -1,0 +1,14 @@
+.navbar-default .navbar-nav>li>a {
+    color:black;
+}
+
+html,
+body,
+.view {
+    height: 100%;
+}
+
+.view {
+    background: url("https://imgs.xkcd.com/xk3d/303/compiling_4.png") no-repeat center center fixed;
+    background-size: cover;
+}
