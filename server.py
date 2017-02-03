@@ -125,6 +125,15 @@ def display_movie(movie_id):
     else:
         average="Nobody has rated this yet"
 
+    BERATEMENT_MESSAGES = [
+        "I suppose you don't have such bad taste after all.",
+        "I regret every decision that I've ever made that has " +
+            "brought me to listen to your opinion.",
+        "Words fail me, as your taste in movies has clearly " +
+            "failed you.",
+        "That movie is great. For a clown to watch. Idiot.",
+        "Words cannot express the awfulness of your taste."
+    ]
 
 ##return page with rating loaded if user has previously rated it
     # score = None
@@ -144,7 +153,9 @@ def display_movie(movie_id):
     return render_template('/movie_info.html',
                             movie=movie,
                             average=average,
-                            released=release_date)
+                            released=release_date,
+                            beratements=BERATEMENT_MESSAGES,
+                            )
 
 
 @app.route('/rate/<movie_id>', methods=["POST"])
@@ -174,13 +185,45 @@ def update_rating(movie_id):
             db.session.commit()
             return redirect("/movies/"+str(movie_id))
 
-def find_rating(user_id, movie_id):  # returns a rating or None
+def find_rating(user_id, movie_id):  
+    """ returns a rating or None"""
+
     return Rating.query.filter(Rating.user_id==user_id, Rating.movie_id==movie_id).first()
 
+@app.route("/compare-to-eye")
+def berate_user():
+    """Determines a difference"""
+
+    score = request.args.get('score')
+    movie_id = request.args.get('movie_id')
+    movie = Movie.query.get(movie_id)
+
+    the_eye = User.query.filter_by(email="the-eye@of-judgment.com").one()
+    print the_eye
+    eye_rating = Rating.query.filter_by(user_id=the_eye.user_id,
+                                        movie_id=movie.movie_id).first()
+    print eye_rating
+    if eye_rating is None:
+        eye_rating = the_eye.predict_rating(movie)
+
+    else:
+        eye_rating = eye_rating.score
+
+    if eye_rating and score:
+        score=int(score)
+        difference = abs(eye_rating - score)
+        print difference
+
+    else:
+        # We couldn't get an eye rating, so we'll skip difference
+        difference = None
+
+    return str(difference)
 
 @app.route("/prediction/<movie_id>")
 def show_prediction(movie_id):
     score = None
+    movie = Movie.query.get(movie_id)
     if 'user_id' in session:
         user = User.query.get(session['user_id'])
         rating = find_rating(session['user_id'], movie_id)
@@ -189,11 +232,19 @@ def show_prediction(movie_id):
             prediction = None
         else:
             score = None
-            movie = Movie.query.get(movie_id)
-            prediction = "{:.1f}".format(user.predict_rating(movie))
+            prediction = user.predict_rating(movie)
+            try:
+                prediction="{:.1f}".format(prediction)
+            except ValueError:
+                print prediction
+
+
     else:
         score = None
         prediction = None
+
+    # Get the eye's rating, either by predicting or using real rating
+
 
     return jsonify({"prediction": prediction, "score": score})
 

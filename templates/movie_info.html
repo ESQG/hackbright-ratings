@@ -8,14 +8,18 @@
 
 <p>Average rating: {{ average }}</p>
 <div id="prediction"></div><br>
+<div id="beratement"></div><br>
+
 
     Rate this movie!
-<form action="/rate/{{movie.movie_id}}" method="POST">
+<form id="form" action="/rate/{{movie.movie_id}}" method="POST">
     {% for i in range(1,6) %}
             <input type="radio" name="score" value="{{i}}" required>{{i}}
     {% endfor %}
     <input type="submit">
 </form>
+
+
 
 <script src="http://code.jquery.com/jquery.js"></script>
 <script>
@@ -35,7 +39,42 @@ function showPrediction(results) {
     $("#prediction").html("You rated this movie " + results.score + ".");
     }
 }
-var hello=1;
+
+$("#form").on("submit", function(evt){
+    submitFunction(evt);
+    getBeratement(evt);
+    }
+    );
+
+function submitFunction(evt){
+    evt.preventDefault();
+    console.log("Form hijacked");
+    var score=$('input[name="score"]:checked').val();
+    $.post("/rate/{{movie.movie_id}}", {'score':score}, function() {
+        $("#prediction").html("You rated this movie " + score + ".");
+        }
+        );
+}
+
+function getBeratement(evt) {
+    var score=$('input[name="score"]:checked').val();
+    console.log(score);
+    $.get("/compare-to-eye?movie_id={{ movie.movie_id }}&score="+score, berateUser)
+}
+
+function berateUser(difference){
+    var BERATEMENT_MESSAGES = [
+        "I suppose you don't have such bad taste after all.",
+        "I regret every decision that I've ever made that has " +
+            "brought me to listen to your opinion.",
+        "Words fail me, as your taste in movies has clearly " +
+            "failed you.",
+        "That movie is great. For a clown to watch. Idiot.",
+        "Words cannot express the awfulness of your taste."
+    ]
+    var index=parseInt(difference);
+    $("#beratement").html(BERATEMENT_MESSAGES[index]);
+} 
 
 </script>
 
